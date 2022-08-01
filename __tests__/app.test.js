@@ -15,10 +15,7 @@ beforeEach(() => {
 
 describe("GET /api/topics", () => {
    describe("STATUS: 200", () => {
-    test("endpoint responds with a 200 status", () => {
-        return request(app).get("/api/topics").expect(200);
-    });
-    test("endpoint responds with an array of all topic objects", () => {
+    test("endpoint responds with 200 status and an array of all topic objects", () => {
         return request(app)
           .get("/api/topics").expect(200)
           .then(({ body }) => {
@@ -32,7 +29,6 @@ describe("GET /api/topics", () => {
         return request(app)
           .get("/api/topics").expect(200)
           .then(({ body }) => {
-            console.log(body)
             const { allTopics } = body;
             allTopics.forEach((topic) => {
                 expect(topic.hasOwnProperty("description")).toBe(true);
