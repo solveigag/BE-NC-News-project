@@ -24,7 +24,7 @@ exports.selectArticleById = (article_id) => {
     )
     .then(({rows}) => {
         if (rows[0] === undefined) {
-            return Promise.reject({code: 404, msg: "Article doesn't exist"})
+            return Promise.reject({status: 404, msg: "Article doesn't exist"})
           }
       return rows[0];
     });
