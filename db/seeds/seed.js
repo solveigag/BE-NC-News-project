@@ -34,7 +34,7 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     topic VARCHAR NOT NULL REFERENCES topics(slug),
     author VARCHAR NOT NULL REFERENCES users(username),
     body VARCHAR NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
     votes INT DEFAULT 0 NOT NULL
   );`);
 
