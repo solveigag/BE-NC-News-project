@@ -76,7 +76,7 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/invalidId")
         .expect(400)
         .then((res) => {
-          expect(res.body.msg).toBe("Invalid id");
+          expect(res.body.msg).toBe("Invalid input data type");
         });
     });
     test("STATUS 404 - article doesn't exist", () => {
@@ -93,7 +93,7 @@ describe("GET /api/articles/:article_id", () => {
 describe("PATCH /api/articles/:article_id", () => {
   describe("STATUS 200", () => {
     test("Responds with 200 and returns relevant article with incremented votes", () => {
-      const newVote = {inc_votes: 1};
+      const newVote = { inc_votes: 1 };
       const date = new Date(1594329060000).toJSON();
       return request(app)
         .patch("/api/articles/1")
@@ -107,12 +107,12 @@ describe("PATCH /api/articles/:article_id", () => {
             author: "butter_bridge",
             body: "I find this existence challenging",
             created_at: date,
-            votes: 101
-          })
+            votes: 101,
+          });
         });
     });
     test("Responds with 200 and returns relevant article with decremented votes", () => {
-      const newVote = {inc_votes: -100};
+      const newVote = { inc_votes: -100 };
       const date = new Date(1594329060000).toJSON();
       return request(app)
         .patch("/api/articles/1")
@@ -126,12 +126,12 @@ describe("PATCH /api/articles/:article_id", () => {
             author: "butter_bridge",
             body: "I find this existence challenging",
             created_at: date,
-            votes: 0
-          })
+            votes: 0,
+          });
         });
     });
     test("Responds with 200 and returns relevant article with votes decremented into negative numbers", () => {
-      const newVote = {inc_votes: -150};
+      const newVote = { inc_votes: -150 };
       const date = new Date(1594329060000).toJSON();
       return request(app)
         .patch("/api/articles/1")
@@ -145,8 +145,8 @@ describe("PATCH /api/articles/:article_id", () => {
             author: "butter_bridge",
             body: "I find this existence challenging",
             created_at: date,
-            votes: -50
-          })
+            votes: -50,
+          });
         });
     });
   });
@@ -156,7 +156,7 @@ describe("PATCH /api/articles/:article_id", () => {
         .patch("/api/articles/invalidId")
         .expect(400)
         .then((res) => {
-          expect(res.body.msg).toBe("Invalid id");
+          expect(res.body.msg).toBe("Invalid input data type");
         });
     });
     test("STATUS 404 - article doesn't exist", () => {
@@ -173,6 +173,26 @@ describe("PATCH /api/articles/:article_id", () => {
         .expect(404)
         .then((res) => {
           expect(res.body.msg).toBe("Not Found!");
+        });
+    });
+    test("STATUS 400 - wrong data type", () => {
+      const newVote = { inc_votes: "wrong data type"};
+      return request(app)
+        .patch("/api/articles/1")
+        .send(newVote)
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Invalid input data type");
+        });
+    });
+    test("STATUS 400 - missing required fields", () => {
+      const newVote = {};
+      return request(app)
+        .patch("/api/articles/1")
+        .send(newVote)
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Missing required fields.");
         });
     });
   });
