@@ -197,3 +197,42 @@ describe("PATCH /api/articles/:article_id", () => {
     });
   });
 });
+
+describe("GET /api/users", () => {
+  describe("STATUS: 200", () => {
+    test("endpoint responds with 200 status and an array of all user objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const { allUsers } = body;
+          expect(allUsers).toBeInstanceOf(Array);
+          expect(allUsers[0]).toBeInstanceOf(Object);
+          expect(allUsers).toHaveLength(4);
+        });
+    });
+    test("endpoint responds with an array of user objects, which include username, name and avatar_url as keys", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const { allUsers } = body;
+          allUsers.forEach((user) => {
+            expect(user.hasOwnProperty("username")).toBe(true);
+            expect(user.hasOwnProperty("name")).toBe(true);
+            expect(user.hasOwnProperty("avatar_url")).toBe(true)
+          });
+        });
+    });
+  });
+  describe("STATUS: 404", () => {
+    test(" responds with a status code 404 if endpoint is incorrect/spelling erros", () => {
+      return request(app)
+        .get("/api/user")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not Found!");
+        });
+    });
+  });
+});
