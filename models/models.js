@@ -22,10 +22,25 @@ exports.selectArticleById = (article_id) => {
       WHERE article_id = $1;`,
       [article_id]
     )
-    .then(({rows}) => {
-        if (rows[0] === undefined) {
-            return Promise.reject({status: 404, msg: "Article doesn't exist"})
-          }
-      return rows[0];
+    .then(({ rows: [article] }) => {
+      if (article === undefined) {
+        return Promise.reject({ status: 404, msg: "Article not found!" });
+      }
+      return article;
+    });
+};
+
+exports.updateArticleById = (newVote, article_id) => {
+  const { inc_votes } = newVote;
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;",
+      [inc_votes, article_id]
+    )
+    .then(({ rows: [updated] }) => {
+      if (updated === undefined) {
+        return Promise.reject({ status: 404, msg: "Article not found!" });
+      }
+      return updated;
     });
 };
