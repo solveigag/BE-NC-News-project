@@ -9,17 +9,12 @@ exports.selectTopics = () => {
 exports.selectArticleById = (article_id) => {
   return db
     .query(
-      `SELECT users.username, 
-      articles.article_id, 
-      articles.title, 
-      articles.topic, 
-      articles.body, 
-      articles.created_at, 
-      articles.votes 
-      FROM articles
-        JOIN users
-        ON articles.author = users.username
-      WHERE article_id = $1;`,
+      `SELECT articles.article_id, articles.title, articles.topic, articles.body, articles.created_at, articles.votes, users.username, COUNT(comments.article_id) AS comment_count 
+      FROM articles 
+      JOIN users ON articles.author = users.username
+      LEFT JOIN comments ON articles.article_id = comments.article_id 
+      WHERE articles.article_id = $1 
+      GROUP BY articles.article_id, users.username;`,
       [article_id]
     )
     .then(({ rows: [article] }) => {
