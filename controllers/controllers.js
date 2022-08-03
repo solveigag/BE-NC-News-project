@@ -4,6 +4,7 @@ const {
   updateArticleById,
   selectUsers,
   selectsArticles,
+  selectAllCommentsByArticleId,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -46,4 +47,12 @@ exports.getArticles = (req, res, next) => {
       res.status(200).send({ allArticles });
     })
     .catch(next);
+};
+
+exports.getAllCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  Promise.all([selectAllCommentsByArticleId(article_id), selectArticleById(article_id)]).then(([allComments]) => {
+    res.status(200).send({ allComments });
+    })
+    .catch(next)
 };
