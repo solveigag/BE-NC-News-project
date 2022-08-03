@@ -3,6 +3,7 @@ const request = require("supertest");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
+const sorted = require('jest-sorted');
 
 afterAll(() => {
   return db.end();
@@ -10,6 +11,17 @@ afterAll(() => {
 
 beforeEach(() => {
   return seed(data);
+});
+
+describe("STATUS: 404 - not an end point", () => {
+  test(" responds with a status code 404 if endpoint is incorrect/spelling erros", () => {
+    return request(app)
+      .get("/api/article")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found!");
+      });
+  });
 });
 
 describe("GET /api/topics", () => {
@@ -35,16 +47,6 @@ describe("GET /api/topics", () => {
             expect(topic.hasOwnProperty("description")).toBe(true);
             expect(topic.hasOwnProperty("slug")).toBe(true);
           });
-        });
-    });
-  });
-  describe("STATUS: 404", () => {
-    test(" responds with a status code 404 if endpoint is incorrect/spelling erros", () => {
-      return request(app)
-        .get("/api/topic")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Not Found!");
         });
     });
   });
@@ -164,14 +166,6 @@ describe("PATCH /api/articles/:article_id", () => {
           expect(body.msg).toBe("Article not found!");
         });
     });
-    test("STATUS 404 - path not found", () => {
-      return request(app)
-        .patch("/api/article/1")
-        .expect(404)
-        .then(({body}) => {
-          expect(body.msg).toBe("Not Found!");
-        });
-    });
     test("STATUS 400 - wrong data type", () => {
       const newVote = { inc_votes: "wrong data type"};
       return request(app)
@@ -222,16 +216,6 @@ describe("GET /api/users", () => {
         });
     });
   });
-  describe("STATUS: 404", () => {
-    test(" responds with a status code 404 if endpoint is incorrect/spelling erros", () => {
-      return request(app)
-        .get("/api/user")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Not Found!");
-        });
-    });
-  });
 });
 
 describe("GET api/articles/:article_id (comment count)", () => {
@@ -272,3 +256,45 @@ describe("GET api/articles/:article_id (comment count)", () => {
     });
   })
 })
+
+describe("GET /api/articles", () => {
+  describe("STATUS: 200", () => {
+    test("endpoint responds with 200 status and an array of all article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeInstanceOf(Array);
+          expect(allArticles[0]).toBeInstanceOf(Object);
+          expect(allArticles).toHaveLength(12);
+        });
+    });
+    test("endpoint responds with an array of article objects, which include specified keys", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          allArticles.forEach((article) => {
+            expect(article.hasOwnProperty("username")).toBe(true);
+            expect(article.hasOwnProperty("title")).toBe(true);
+            expect(article.hasOwnProperty("article_id")).toBe(true);
+            expect(article.hasOwnProperty("topic")).toBe(true);
+            expect(article.hasOwnProperty("created_at")).toBe(true);
+            expect(article.hasOwnProperty("votes")).toBe(true);
+            expect(article.hasOwnProperty("comment_count")).toBe(true);
+          });
+        });
+    });
+    test("article objects within the array should be sorted by creation day", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('created_at', {descending: true});
+       })
+    })
+  });
+});
