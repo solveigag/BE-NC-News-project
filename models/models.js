@@ -75,7 +75,6 @@ exports.selectAllCommentsByArticleId = (article_id) => {
       [article_id]
     )
     .then(({ rows: allComments }) => {
-      //console.log(allComments)
       return allComments;
     });
 };
