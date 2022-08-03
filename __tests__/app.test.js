@@ -298,3 +298,81 @@ describe("GET /api/articles", () => {
     })
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  describe("STATUS 200", () => {
+    test("endpoint responds with 200 status and an array of comments objects matching article id", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { allComments } = body;
+          expect(allComments).toBeInstanceOf(Array);
+          expect(allComments[0]).toBeInstanceOf(Object);
+          expect(allComments).toHaveLength(11);
+        });
+    });
+    test("returns an empty array if there are no comments for a given article id", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { allComments } = body;
+          expect(allComments).toBeInstanceOf(Array);
+          expect(allComments).toHaveLength(0);
+        });
+    });
+    test("endpoint responds with an array of comment objects, which include specified keys", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { allComments } = body;
+          allComments.forEach((comment) => {
+            expect(comment.hasOwnProperty("comment_id")).toBe(true);
+            expect(comment.hasOwnProperty("votes")).toBe(true);
+            expect(comment.hasOwnProperty("created_at")).toBe(true);
+            expect(comment.hasOwnProperty("author")).toBe(true);
+            expect(comment.hasOwnProperty("body")).toBe(true);
+          });
+        });
+    });
+    test("each object contains correct data type", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { allComments } = body;
+          allComments.forEach((comment) => {
+            expect(comment).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+  })
+  describe("STATUS 400", () => {
+    test("STATUS 404 - article doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/99/comments")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("Article not found!");
+        });
+    });
+    test("Status 400 - invalid id", () => {
+      return request(app)
+        .get("/api/articles/invalidId/comments")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Invalid input data type");
+        });
+    });
+  })
+})
