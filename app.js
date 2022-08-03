@@ -5,6 +5,7 @@ const {
   getArticleById,
   patchArticleById,
   getUsers,
+  getArticles
 } = require("./controllers/controllers");
 
 app.use(express.json());
@@ -13,7 +14,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleById);
 app.patch("/api/articles/:article_id", patchArticleById);
 app.get("/api/users", getUsers);
-
+app.get("/api/articles", getArticles);
 
 app.all("/*", (req, res) => {
   res.status(404).send({ msg: "Not Found!" });

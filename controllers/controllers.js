@@ -3,6 +3,7 @@ const {
   selectArticleById,
   updateArticleById,
   selectUsers,
+  selectsArticles,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -35,6 +36,14 @@ exports.getUsers = (req, res, next) => {
   selectUsers()
     .then((allUsers) => {
       res.status(200).send({ allUsers });
+    })
+    .catch(next);
+};
+
+exports.getArticles = (req, res, next) => {
+  selectsArticles()
+    .then((allArticles) => {
+      res.status(200).send({ allArticles });
     })
     .catch(next);
 };
