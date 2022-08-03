@@ -13,6 +13,17 @@ beforeEach(() => {
   return seed(data);
 });
 
+describe("STATUS: 404 - not an end point", () => {
+  test(" responds with a status code 404 if endpoint is incorrect/spelling erros", () => {
+    return request(app)
+      .get("/api/article")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found!");
+      });
+  });
+});
+
 describe("GET /api/topics", () => {
   describe("STATUS: 200", () => {
     test("endpoint responds with 200 status and an array of all topic objects", () => {
@@ -36,16 +47,6 @@ describe("GET /api/topics", () => {
             expect(topic.hasOwnProperty("description")).toBe(true);
             expect(topic.hasOwnProperty("slug")).toBe(true);
           });
-        });
-    });
-  });
-  describe("STATUS: 404", () => {
-    test(" responds with a status code 404 if endpoint is incorrect/spelling erros", () => {
-      return request(app)
-        .get("/api/topic")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Not Found!");
         });
     });
   });
@@ -165,14 +166,6 @@ describe("PATCH /api/articles/:article_id", () => {
           expect(body.msg).toBe("Article not found!");
         });
     });
-    test("STATUS 404 - path not found", () => {
-      return request(app)
-        .patch("/api/article/1")
-        .expect(404)
-        .then(({body}) => {
-          expect(body.msg).toBe("Not Found!");
-        });
-    });
     test("STATUS 400 - wrong data type", () => {
       const newVote = { inc_votes: "wrong data type"};
       return request(app)
@@ -220,16 +213,6 @@ describe("GET /api/users", () => {
             expect(user.hasOwnProperty("name")).toBe(true);
             expect(user.hasOwnProperty("avatar_url")).toBe(true)
           });
-        });
-    });
-  });
-  describe("STATUS: 404", () => {
-    test(" responds with a status code 404 if endpoint is incorrect/spelling erros", () => {
-      return request(app)
-        .get("/api/user")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Not Found!");
         });
     });
   });
@@ -313,15 +296,5 @@ describe("GET /api/articles", () => {
           expect(allArticles).toBeSortedBy('created_at', {descending: true});
        })
     })
-  });
-  describe("STATUS: 404", () => {
-    test(" responds with a status code 404 if endpoint is incorrect/spelling erros", () => {
-      return request(app)
-        .get("/api/article")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Not Found!");
-        });
-    });
   });
 });
