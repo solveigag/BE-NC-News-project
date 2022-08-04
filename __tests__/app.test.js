@@ -419,24 +419,34 @@ describe("POST /api/articles/:article_id/comments", () => {
           expect(body.msg).toBe("Article not found!");
         });
     });
-    test("STATUS 400 - wrong data type", () => {
-      const newComment = { username: 1, body: "some text"};
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send(newComment)
-        .expect(400)
-        .then(({body}) => {
-          expect(body.msg).toBe("Invalid input data type");
-        });
-    });
+    // test.only("STATUS 400 - wrong data type", () => {
+    //   const newComment = { username: 1, body: "some text"};
+    //   return request(app)
+    //     .post("/api/articles/1/comments")
+    //     .send(newComment)
+    //     .expect(400)
+    //     .then(({body}) => {
+    //       expect(body.msg).toBe("Invalid input data type");
+    //     });
+   // });
     test("STATUS 400 - missing required fields", () => {
-      const newComment = {username: ""};
+      const newComment = {username: "butter_bridge"};
       return request(app)
         .post("/api/articles/1/comments")
         .send(newComment)
         .expect(400)
         .then(({body}) => {
           expect(body.msg).toBe("Missing required fields.");
+        });
+    });
+    test("STATUS 404 - username doesn't exist", () => {
+      const newComment = {username: "butter", body: "some text"};
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("Username not found!");
         });
     });
   });
