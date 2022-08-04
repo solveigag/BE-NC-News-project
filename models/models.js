@@ -1,5 +1,6 @@
 const { all } = require("../app");
 const db = require("../db/connection");
+const {checkUsernameExists} = require("../db/seeds/utils")
 
 exports.selectTopics = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows: topics }) => {
@@ -76,5 +77,19 @@ exports.selectAllCommentsByArticleId = (article_id) => {
     )
     .then(({ rows: allComments }) => {
       return allComments;
+    });
+};
+
+exports.addCommentByArticleId = (newComment, article_id) => {
+  const { username, body } = newComment;
+
+ return checkUsernameExists(username).then((rows) => {
+    return db.query(
+      "INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;",
+      [body, username, article_id]
+    )
+  })   
+    .then(({ rows: addedComment }) => {
+      return addedComment;
     });
 };
