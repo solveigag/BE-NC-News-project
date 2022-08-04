@@ -5,6 +5,7 @@ const {
   selectUsers,
   selectsArticles,
   selectAllCommentsByArticleId,
+  addCommentByArticleId,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -51,8 +52,25 @@ exports.getArticles = (req, res, next) => {
 
 exports.getAllCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  Promise.all([selectAllCommentsByArticleId(article_id), selectArticleById(article_id)]).then(([allComments]) => {
-    res.status(200).send({ allComments });
+  Promise.all([
+    selectAllCommentsByArticleId(article_id),
+    selectArticleById(article_id),
+  ])
+    .then(([allComments]) => {
+      res.status(200).send({ allComments });
     })
-    .catch(next)
+    .catch(next);
+};
+
+exports.postCommentByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+
+  selectArticleById(article_id)
+    .then((res) => {
+      return addCommentByArticleId(req.body, article_id);
+    })
+    .then(([addedComment]) => {
+      res.status(201).send({ addedComment });
+    })
+    .catch(next);
 };

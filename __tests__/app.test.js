@@ -4,6 +4,7 @@ const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const sorted = require('jest-sorted');
+const { convertTimestampToDate } = require("../db/seeds/utils");
 
 afterAll(() => {
   return db.end();
@@ -375,4 +376,68 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
     });
   })
+})
+
+describe("POST /api/articles/:article_id/comments", () => {
+  describe("STATUS 201", () => {
+    test("Responds with 201 and returns created comment", () => {
+      const newComment = { username: "butter_bridge", body: "some text"};
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.addedComment).toEqual({
+            comment_id: 19,
+            body: "some text",
+            article_id: 1,
+            author: "butter_bridge",
+            votes: 0,
+            created_at: expect.any(String),
+          });
+        });
+    });
+  });
+  describe("STATUS 400s", () => {
+    test("Status 400 - invalid id", () => {
+      const newComment = { username: "butter_bridge", body: "some text"}
+      return request(app)
+        .post("/api/articles/invalidId/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Invalid input data type");
+        });
+    });
+    test("STATUS 404 - article doesn't exist", () => {
+      const newComment = { username: "butter_bridge", body: "some text"}
+      return request(app)
+        .post("/api/articles/999/comments")
+        .send(newComment)
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("Article not found!");
+        });
+    });
+    test("STATUS 400 - wrong data type", () => {
+      const newComment = { username: 1, body: "some text"};
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Invalid input data type");
+        });
+    });
+    test("STATUS 400 - missing required fields", () => {
+      const newComment = {username: ""};
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Missing required fields.");
+        });
+    });
+  });
 })

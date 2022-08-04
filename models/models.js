@@ -78,3 +78,15 @@ exports.selectAllCommentsByArticleId = (article_id) => {
       return allComments;
     });
 };
+
+exports.addCommentByArticleId = (newComment, article_id) => {
+  const { username, body } = newComment;
+  return db
+    .query(
+      "INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;",
+      [body, username, article_id]
+    )
+    .then(({ rows: addedComment }) => {
+      return addedComment;
+    });
+};
