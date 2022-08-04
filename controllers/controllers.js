@@ -43,11 +43,17 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectsArticles()
+   const {sort_by, order_by, topic} = req.query;
+
+  selectsArticles(sort_by, order_by, topic)
     .then((allArticles) => {
+    
       res.status(200).send({ allArticles });
     })
-    .catch(next);
+    .catch((err) => {
+        // console.log(err);
+        next(err)
+    });
 };
 
 exports.getAllCommentsByArticleId = (req, res, next) => {
