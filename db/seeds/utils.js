@@ -34,3 +34,4 @@ exports.checkUsernameExists = (username) => {
       return rows;
     });
 };
+
