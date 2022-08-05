@@ -7,6 +7,7 @@ const {
   selectAllCommentsByArticleId,
   addCommentByArticleId,
 } = require("../models/models");
+const { checkTopicExists } = require("../db/seeds/utils");
 
 exports.getTopics = (req, res, next) => {
   selectTopics()
@@ -43,9 +44,14 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectsArticles()
+  const { sort_by, order_by, topic } = req.query;
+
+  Promise.all([
+    checkTopicExists(topic),
+    selectsArticles(sort_by, order_by, topic),
+  ])
     .then((allArticles) => {
-      res.status(200).send({ allArticles });
+      res.status(200).send({ allArticles: allArticles[1] });
     })
     .catch(next);
 };
@@ -72,5 +78,5 @@ exports.postCommentByArticleId = (req, res, next) => {
     .then(([addedComment]) => {
       res.status(201).send({ addedComment });
     })
-    .catch(next)
+    .catch(next);
 };

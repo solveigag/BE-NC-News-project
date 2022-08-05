@@ -4,7 +4,7 @@ const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const sorted = require('jest-sorted');
-const { convertTimestampToDate } = require("../db/seeds/utils");
+
 
 afterAll(() => {
   return db.end();
@@ -38,15 +38,15 @@ describe("GET /api/topics", () => {
           expect(allTopics).toHaveLength(3);
         });
     });
-    test("endpoint responds with an array of topic objects, which include description and slug as keys", () => {
+    test("endpoint responds with an array of topic objects, which include description and slug as keys and correct data types", () => {
       return request(app)
         .get("/api/topics")
         .expect(200)
         .then(({ body }) => {
           const { allTopics } = body;
           allTopics.forEach((topic) => {
-            expect(topic.hasOwnProperty("description")).toBe(true);
-            expect(topic.hasOwnProperty("slug")).toBe(true);
+            expect(topic).toHaveProperty("description", expect.any(String));
+            expect(topic).toHaveProperty("slug", expect.any(String));
           });
         });
     });
@@ -61,7 +61,7 @@ describe("GET /api/articles/:article_id", () => {
         .expect(200)
         .then(({body}) => {
           expect(body.article).toEqual({
-            username: "butter_bridge",
+            author: "butter_bridge",
             article_id: 1,
             title: "Living in the shadow of a great man",
             topic: "mitch",
@@ -203,16 +203,16 @@ describe("GET /api/users", () => {
           expect(allUsers).toHaveLength(4);
         });
     });
-    test("endpoint responds with an array of user objects, which include username, name and avatar_url as keys", () => {
+    test("endpoint responds with an array of user objects, which include username, name and avatar_url as keys and correct data types", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
         .then(({ body }) => {
           const { allUsers } = body;
           allUsers.forEach((user) => {
-            expect(user.hasOwnProperty("username")).toBe(true);
-            expect(user.hasOwnProperty("name")).toBe(true);
-            expect(user.hasOwnProperty("avatar_url")).toBe(true)
+            expect(user).toHaveProperty("username", expect.any(String));
+            expect(user).toHaveProperty("name", expect.any(String));
+            expect(user).toHaveProperty("avatar_url", expect.any(String));
           });
         });
     });
@@ -227,7 +227,7 @@ describe("GET api/articles/:article_id (comment count)", () => {
         .expect(200)
         .then(({body}) => {
           expect(body.article).toEqual({
-            username: "butter_bridge",
+            author: "butter_bridge",
             article_id: 1,
             title: "Living in the shadow of a great man",
             topic: "mitch",
@@ -244,7 +244,7 @@ describe("GET api/articles/:article_id (comment count)", () => {
         .expect(200)
         .then(({body}) => {
           expect(body.article).toEqual({
-            username: "icellusedkars",
+            author: "icellusedkars",
             article_id: 2,
             title: "Sony Vaio; or, The Laptop",
             topic: "mitch",
@@ -271,23 +271,25 @@ describe("GET /api/articles", () => {
           expect(allArticles).toHaveLength(12);
         });
     });
-    test("endpoint responds with an array of article objects, which include specified keys", () => {
+    test("endpoint responds with an array of article objects, which include specified keys and correct data types", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
           allArticles.forEach((article) => {
-            expect(article.hasOwnProperty("username")).toBe(true);
-            expect(article.hasOwnProperty("title")).toBe(true);
-            expect(article.hasOwnProperty("article_id")).toBe(true);
-            expect(article.hasOwnProperty("topic")).toBe(true);
-            expect(article.hasOwnProperty("created_at")).toBe(true);
-            expect(article.hasOwnProperty("votes")).toBe(true);
-            expect(article.hasOwnProperty("comment_count")).toBe(true);
+            expect(article).toHaveProperty("author", expect.any(String));
+            expect(article).toHaveProperty("title", expect.any(String));
+            expect(article).toHaveProperty("article_id", expect.any(Number));
+            expect(article).toHaveProperty("topic", expect.any(String));
+            expect(article).toHaveProperty("created_at", expect.any(String));
+            expect(article).toHaveProperty("votes", expect.any(Number));
+            expect(article).toHaveProperty("comment_count", expect.any(Number));
           });
         });
     });
+  });
+  describe("STATUS: 200 - queries", () => {
     test("article objects within the array should be sorted by creation day", () => {
       return request(app)
         .get("/api/articles")
@@ -296,8 +298,127 @@ describe("GET /api/articles", () => {
           const { allArticles } = body;
           expect(allArticles).toBeSortedBy('created_at', {descending: true});
        })
-    })
-  });
+    });
+    test("article objects within the array should be sorted by descending creation day by default", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('created_at', {descending: true});
+       })
+    });
+    test("articles can be sorted by any valid column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('author', {descending: true});
+       })
+    });
+    test("articles can be sorted by any valid column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('comment_count', {descending: true});
+       })
+    });
+    test("articles can be sorted by any valid column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('votes', {descending: true});
+       })
+    });
+    test("articles can be sorted by any valid column in ascending or descending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order_by=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('votes');
+       })
+    });
+    test("articles can be sorted by any valid column in ascending or descending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count&order_by=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('comment_count');
+       })
+    });
+    test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('created_at', {descending: true});
+          expect(allArticles).toHaveLength(11);
+       })
+    });
+    test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toHaveLength(1);
+       })
+    });
+    
+    test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&sort_by=comment_count&order_by=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { allArticles } = body;
+          expect(allArticles).toBeSortedBy('comment_count', {descending: false});
+          expect(allArticles).toHaveLength(11);
+       })
+    });
+    test("STATUS 200 - returns empty array if topic is valid but no associated articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({body}) => {
+          const { allArticles } = body;
+          expect(allArticles).toEqual([]);
+        });
+    });
+  })
+  describe("STATUS: 400s - queries", () => {
+    test("STATUS 404 - topic doesn't exist - non existent topic", () => {
+      return request(app)
+        .get("/api/articles?topic=dogs")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("Topic not found!");
+        });
+    });
+    test("STATUS 400 - invalid sort by", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&sort_by=invalidSortBy")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Invalid input");
+        });
+    });
+    test("STATUS 400 - invalid order by", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&order_by=invalidSortBy")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Invalid input");
+        });
+    });
+  })
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -419,16 +540,6 @@ describe("POST /api/articles/:article_id/comments", () => {
           expect(body.msg).toBe("Article not found!");
         });
     });
-    // test.only("STATUS 400 - wrong data type", () => {
-    //   const newComment = { username: 1, body: "some text"};
-    //   return request(app)
-    //     .post("/api/articles/1/comments")
-    //     .send(newComment)
-    //     .expect(400)
-    //     .then(({body}) => {
-    //       expect(body.msg).toBe("Invalid input data type");
-    //     });
-   // });
     test("STATUS 400 - missing required fields", () => {
       const newComment = {username: "butter_bridge"};
       return request(app)
