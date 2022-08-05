@@ -9,6 +9,7 @@ const {
   removeCommentByCommentId
 } = require("../models/models");
 const { checkTopicExists } = require("../db/seeds/utils");
+const endPoints = require("../endpoints.json");
 
 exports.getTopics = (req, res, next) => {
   selectTopics()
@@ -85,6 +86,10 @@ exports.postCommentByArticleId = (req, res, next) => {
 exports.deleteCommentByCommentId = (req, res, next) => {
     const { comment_id } = req.params;
     removeCommentByCommentId(comment_id).then(() => {
-        res.status(204).send();
+        res.sendStatus(204);
     }).catch(next)
+};
+
+exports.getApi = (req, res, next) => {
+    res.status(200).send({endPoints})
 }
