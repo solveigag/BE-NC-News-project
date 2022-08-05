@@ -59,7 +59,7 @@ describe("GET /api/articles/:article_id", () => {
       return request(app)
         .get("/api/articles/1")
         .expect(200)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.article).toEqual({
             author: "butter_bridge",
             article_id: 1,
@@ -68,7 +68,7 @@ describe("GET /api/articles/:article_id", () => {
             body: "I find this existence challenging",
             created_at: "2020-07-09T21:11:00.000Z",
             votes: 100,
-            comment_count: "11"
+            comment_count: "11",
           });
         });
     });
@@ -78,7 +78,7 @@ describe("GET /api/articles/:article_id", () => {
       return request(app)
         .get("/api/articles/invalidId")
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Invalid input data type");
         });
     });
@@ -86,7 +86,7 @@ describe("GET /api/articles/:article_id", () => {
       return request(app)
         .get("/api/articles/999")
         .expect(404)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Article not found!");
         });
     });
@@ -155,7 +155,7 @@ describe("PATCH /api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/invalidId")
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Invalid input data type");
         });
     });
@@ -163,17 +163,17 @@ describe("PATCH /api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/999")
         .expect(404)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Article not found!");
         });
     });
     test("STATUS 400 - wrong data type", () => {
-      const newVote = { inc_votes: "wrong data type"};
+      const newVote = { inc_votes: "wrong data type" };
       return request(app)
         .patch("/api/articles/1")
         .send(newVote)
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Invalid input data type");
         });
     });
@@ -183,7 +183,7 @@ describe("PATCH /api/articles/:article_id", () => {
         .patch("/api/articles/1")
         .send(newVote)
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Missing required fields.");
         });
     });
@@ -225,7 +225,7 @@ describe("GET api/articles/:article_id (comment count)", () => {
       return request(app)
         .get("/api/articles/1")
         .expect(200)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.article).toEqual({
             author: "butter_bridge",
             article_id: 1,
@@ -234,7 +234,7 @@ describe("GET api/articles/:article_id (comment count)", () => {
             body: "I find this existence challenging",
             created_at: "2020-07-09T21:11:00.000Z",
             votes: 100,
-            comment_count: "11"
+            comment_count: "11",
           });
         });
     });
@@ -242,7 +242,7 @@ describe("GET api/articles/:article_id (comment count)", () => {
       return request(app)
         .get("/api/articles/2")
         .expect(200)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.article).toEqual({
             author: "icellusedkars",
             article_id: 2,
@@ -251,12 +251,12 @@ describe("GET api/articles/:article_id (comment count)", () => {
             body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
             created_at: "2020-10-16T06:03:00.000Z",
             votes: 0,
-            comment_count: "0"
+            comment_count: "0",
           });
         });
     });
-  })
-})
+  });
+});
 
 describe("GET /api/articles", () => {
   describe("STATUS: 200", () => {
@@ -296,8 +296,8 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('created_at', {descending: true});
-       })
+          expect(allArticles).toBeSortedBy("created_at", { descending: true });
+        });
     });
     test("article objects within the array should be sorted by descending creation day by default", () => {
       return request(app)
@@ -305,8 +305,8 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('created_at', {descending: true});
-       })
+          expect(allArticles).toBeSortedBy("created_at", { descending: true });
+        });
     });
     test("articles can be sorted by any valid column", () => {
       return request(app)
@@ -314,8 +314,8 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('author', {descending: true});
-       })
+          expect(allArticles).toBeSortedBy("author", { descending: true });
+        });
     });
     test("articles can be sorted by any valid column", () => {
       return request(app)
@@ -323,8 +323,10 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('comment_count', {descending: true});
-       })
+          expect(allArticles).toBeSortedBy("comment_count", {
+            descending: true,
+          });
+        });
     });
     test("articles can be sorted by any valid column", () => {
       return request(app)
@@ -332,8 +334,8 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('votes', {descending: true});
-       })
+          expect(allArticles).toBeSortedBy("votes", { descending: true });
+        });
     });
     test("articles can be sorted by any valid column in ascending or descending order", () => {
       return request(app)
@@ -341,8 +343,8 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('votes');
-       })
+          expect(allArticles).toBeSortedBy("votes");
+        });
     });
     test("articles can be sorted by any valid column in ascending or descending order", () => {
       return request(app)
@@ -350,8 +352,8 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('comment_count');
-       })
+          expect(allArticles).toBeSortedBy("comment_count");
+        });
     });
     test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
       return request(app)
@@ -359,9 +361,9 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('created_at', {descending: true});
+          expect(allArticles).toBeSortedBy("created_at", { descending: true });
           expect(allArticles).toHaveLength(11);
-       })
+        });
     });
     test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
       return request(app)
@@ -370,7 +372,7 @@ describe("GET /api/articles", () => {
         .then(({ body }) => {
           const { allArticles } = body;
           expect(allArticles).toHaveLength(1);
-       })
+        });
     });
     
     test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
@@ -379,9 +381,11 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { allArticles } = body;
-          expect(allArticles).toBeSortedBy('comment_count', {descending: false});
+          expect(allArticles).toBeSortedBy("comment_count", {
+            descending: false,
+          });
           expect(allArticles).toHaveLength(11);
-       })
+        });
     });
     test("STATUS 200 - returns empty array if topic is valid but no associated articles", () => {
       return request(app)
@@ -398,7 +402,7 @@ describe("GET /api/articles", () => {
       return request(app)
         .get("/api/articles?topic=dogs")
         .expect(404)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Topic not found!");
         });
     });
@@ -406,7 +410,7 @@ describe("GET /api/articles", () => {
       return request(app)
         .get("/api/articles?topic=mitch&sort_by=invalidSortBy")
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Invalid input");
         });
     });
@@ -414,11 +418,11 @@ describe("GET /api/articles", () => {
       return request(app)
         .get("/api/articles?topic=mitch&order_by=invalidSortBy")
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Invalid input");
         });
     });
-  })
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -478,13 +482,13 @@ describe("GET /api/articles/:article_id/comments", () => {
           });
         });
     });
-  })
+  });
   describe("STATUS 400", () => {
     test("STATUS 404 - article doesn't exist", () => {
       return request(app)
         .get("/api/articles/99/comments")
         .expect(404)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Article not found!");
         });
     });
@@ -492,17 +496,17 @@ describe("GET /api/articles/:article_id/comments", () => {
       return request(app)
         .get("/api/articles/invalidId/comments")
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Invalid input data type");
         });
     });
-  })
-})
+  });
+});
 
 describe("POST /api/articles/:article_id/comments", () => {
   describe("STATUS 201", () => {
     test("Responds with 201 and returns created comment", () => {
-      const newComment = { username: "butter_bridge", body: "some text"};
+      const newComment = { username: "butter_bridge", body: "some text" };
       return request(app)
         .post("/api/articles/1/comments")
         .send(newComment)
@@ -521,44 +525,70 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
   describe("STATUS 400s", () => {
     test("Status 400 - invalid id", () => {
-      const newComment = { username: "butter_bridge", body: "some text"}
+      const newComment = { username: "butter_bridge", body: "some text" };
       return request(app)
         .post("/api/articles/invalidId/comments")
         .send(newComment)
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Invalid input data type");
         });
     });
     test("STATUS 404 - article doesn't exist", () => {
-      const newComment = { username: "butter_bridge", body: "some text"}
+      const newComment = { username: "butter_bridge", body: "some text" };
       return request(app)
         .post("/api/articles/999/comments")
         .send(newComment)
         .expect(404)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Article not found!");
         });
     });
     test("STATUS 400 - missing required fields", () => {
-      const newComment = {username: "butter_bridge"};
+      const newComment = { username: "butter_bridge" };
       return request(app)
         .post("/api/articles/1/comments")
         .send(newComment)
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Missing required fields.");
         });
     });
     test("STATUS 404 - username doesn't exist", () => {
-      const newComment = {username: "butter", body: "some text"};
+      const newComment = { username: "butter", body: "some text" };
       return request(app)
         .post("/api/articles/1/comments")
         .send(newComment)
         .expect(404)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.msg).toBe("Username not found!");
         });
     });
   });
-})
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("Status 204 - deletes comment by comment id and returns no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("Status 404 - comment not found, valid but not existent comment id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found!");
+      });
+  });
+  test("Status 400 - invalid id", () => {
+    return request(app)
+      .delete("/api/comments/notvalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input data type");
+      });
+  });
+});
