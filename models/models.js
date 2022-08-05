@@ -1,6 +1,6 @@
-const { all } = require("../app");
+
 const db = require("../db/connection");
-const { checkUsernameExists, checkTopicExists } = require("../db/seeds/utils");
+const { checkUsernameExists} = require("../db/seeds/utils");
 
 exports.selectTopics = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows: topics }) => {
