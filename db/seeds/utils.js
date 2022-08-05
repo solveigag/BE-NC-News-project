@@ -1,6 +1,8 @@
 const { all } = require("../../app");
 const db = require("../connection");
 
+
+
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
   return { created_at: new Date(created_at), ...otherProperties };
@@ -25,13 +27,25 @@ exports.formatComments = (comments, idLookup) => {
 };
 
 exports.checkUsernameExists = (username) => {
-  return db
-    .query("SELECT * FROM users WHERE username = $1", [username])
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Username not found!" });
-      }
-      return rows;
-    });
+  return db.query("SELECT * FROM users WHERE username = $1", [username]).then(({rows})=> {
+  
+    if (rows.length === 0) {
+      return Promise.reject({status: 404, msg: "Username not found!"})
+    }
+    return rows;
+  })
 };
+
+exports.checkTopicExists = (topic) => {
+  if (!topic) {
+    return true;
+  }
+  return db.query("SELECT * FROM topics WHERE slug = $1", [topic]).then(({rows})=> {
+    if (rows.length === 0) {
+      return Promise.reject({status: 404, msg: "Topic not found!"})
+    }
+    return rows;
+  })
+}
+
 

@@ -1,6 +1,6 @@
 const { all } = require("../app");
 const db = require("../db/connection");
-const { checkUsernameExists } = require("../db/seeds/utils");
+const { checkUsernameExists, checkTopicExists } = require("../db/seeds/utils");
 
 exports.selectTopics = () => {
   return db.query(`SELECT * FROM topics;`).then(({ rows: topics }) => {
@@ -76,16 +76,13 @@ exports.selectsArticles = (sortBy = "created_at", orderBy = "DESC", topic) => {
   GROUP BY articles.article_id`;
 
   if (topic) {
-    queryStr += ` HAVING articles.topic = $1`;
-    queryArr.push(topic);
+      queryStr += ` HAVING articles.topic = $1`;
+      queryArr.push(topic);        
   }
 
   queryStr += ` ORDER BY ${sortBy} ${orderBy};`;
 
   return db.query(queryStr, queryArr).then(({ rows: articles }) => {
-    if (articles.length === 0) {
-      return Promise.reject({ status: 404, msg: "Topic not found!" });
-    }
     return articles;
   });
 };

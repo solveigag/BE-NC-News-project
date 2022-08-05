@@ -8,6 +8,7 @@ const {
   addCommentByArticleId,
   removeCommentByCommentId
 } = require("../models/models");
+const { checkTopicExists } = require("../db/seeds/utils");
 
 exports.getTopics = (req, res, next) => {
   selectTopics()
@@ -44,17 +45,16 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-   const {sort_by, order_by, topic} = req.query;
+  const { sort_by, order_by, topic } = req.query;
 
-  selectsArticles(sort_by, order_by, topic)
+  Promise.all([
+    checkTopicExists(topic),
+    selectsArticles(sort_by, order_by, topic),
+  ])
     .then((allArticles) => {
-    
-      res.status(200).send({ allArticles });
+      res.status(200).send({ allArticles: allArticles[1] });
     })
-    .catch((err) => {
-        // console.log(err);
-        next(err)
-    });
+    .catch(next);
 };
 
 exports.getAllCommentsByArticleId = (req, res, next) => {
@@ -79,7 +79,7 @@ exports.postCommentByArticleId = (req, res, next) => {
     .then(([addedComment]) => {
       res.status(201).send({ addedComment });
     })
-    .catch(next)
+    .catch(next);
 };
 
 exports.deleteCommentByCommentId = (req, res, next) => {

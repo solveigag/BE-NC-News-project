@@ -3,8 +3,8 @@ const request = require("supertest");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
-const sorted = require("jest-sorted");
-//const { convertTimestampToDate } = require("../db/seeds/utils");
+const sorted = require('jest-sorted');
+
 
 afterAll(() => {
   return db.end();
@@ -45,10 +45,8 @@ describe("GET /api/topics", () => {
         .then(({ body }) => {
           const { allTopics } = body;
           allTopics.forEach((topic) => {
-            expect(
-              topic.hasOwnProperty("description", expect.any(String))
-            ).toBe(true);
-            expect(topic.hasOwnProperty("slug", expect.any(String))).toBe(true);
+            expect(topic).toHaveProperty("description", expect.any(String));
+            expect(topic).toHaveProperty("slug", expect.any(String));
           });
         });
     });
@@ -212,13 +210,9 @@ describe("GET /api/users", () => {
         .then(({ body }) => {
           const { allUsers } = body;
           allUsers.forEach((user) => {
-            expect(user.hasOwnProperty("username", expect.any(String))).toBe(
-              true
-            );
-            expect(user.hasOwnProperty("name", expect.any(String))).toBe(true);
-            expect(user.hasOwnProperty("avatar_url", expect.any(String))).toBe(
-              true
-            );
+            expect(user).toHaveProperty("username", expect.any(String));
+            expect(user).toHaveProperty("name", expect.any(String));
+            expect(user).toHaveProperty("avatar_url", expect.any(String));
           });
         });
     });
@@ -284,27 +278,13 @@ describe("GET /api/articles", () => {
         .then(({ body }) => {
           const { allArticles } = body;
           allArticles.forEach((article) => {
-            expect(article.hasOwnProperty("author", expect.any(String))).toBe(
-              true
-            );
-            expect(article.hasOwnProperty("title", expect.any(String))).toBe(
-              true
-            );
-            expect(
-              article.hasOwnProperty("article_id", expect.any(Number))
-            ).toBe(true);
-            expect(article.hasOwnProperty("topic", expect.any(String))).toBe(
-              true
-            );
-            expect(
-              article.hasOwnProperty("created_at", expect.any(String))
-            ).toBe(true);
-            expect(article.hasOwnProperty("votes", expect.any(Number))).toBe(
-              true
-            );
-            expect(
-              article.hasOwnProperty("comment_count", expect.any(Number))
-            ).toBe(true);
+            expect(article).toHaveProperty("author", expect.any(String));
+            expect(article).toHaveProperty("title", expect.any(String));
+            expect(article).toHaveProperty("article_id", expect.any(Number));
+            expect(article).toHaveProperty("topic", expect.any(String));
+            expect(article).toHaveProperty("created_at", expect.any(String));
+            expect(article).toHaveProperty("votes", expect.any(Number));
+            expect(article).toHaveProperty("comment_count", expect.any(Number));
           });
         });
     });
@@ -375,7 +355,7 @@ describe("GET /api/articles", () => {
           expect(allArticles).toBeSortedBy("comment_count");
         });
     });
-    test("articles can be filtered by topic, sordted by creation date in descending order by default ", () => {
+    test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
       return request(app)
         .get("/api/articles?topic=mitch")
         .expect(200)
@@ -385,7 +365,7 @@ describe("GET /api/articles", () => {
           expect(allArticles).toHaveLength(11);
         });
     });
-    test("articles can be filtered by topic, sordted by creation dae in descending order by default ", () => {
+    test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
       return request(app)
         .get("/api/articles?topic=cats")
         .expect(200)
@@ -394,7 +374,8 @@ describe("GET /api/articles", () => {
           expect(allArticles).toHaveLength(1);
         });
     });
-    test("articles can be filtered by topic, sordted by creation dae in descending order by default ", () => {
+    
+    test("articles can be filtered by topic, sorted by creation date in descending order by default ", () => {
       return request(app)
         .get("/api/articles?topic=mitch&sort_by=comment_count&order_by=asc")
         .expect(200)
@@ -406,9 +387,18 @@ describe("GET /api/articles", () => {
           expect(allArticles).toHaveLength(11);
         });
     });
-  });
+    test("STATUS 200 - returns empty array if topic is valid but no associated articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({body}) => {
+          const { allArticles } = body;
+          expect(allArticles).toEqual([]);
+        });
+    });
+  })
   describe("STATUS: 400s - queries", () => {
-    test("STATUS 404 - topic doesn't exist", () => {
+    test("STATUS 404 - topic doesn't exist - non existent topic", () => {
       return request(app)
         .get("/api/articles?topic=dogs")
         .expect(404)
