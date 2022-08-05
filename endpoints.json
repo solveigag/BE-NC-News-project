@@ -4,24 +4,129 @@
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
-    "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "allTopics": [
+        {"description": "The man, the Mitch, the legend","slug": "mitch"},
+        {"description": "Not dogs", "slug": "cats"},
+        {"description": "what books are made of", "slug": "paper"}
+      ]
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of all articles which are sorted by creation date in descending order by default, accepts queries",
+    "queries": ["topic", "sort_by", "order"],
     "exampleResponse": {
-      "articles": [
+      "allArticles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "title": "UNCOVERED: catspiracy to bring down democracy",
+          "topic": "cats",
+          "article_id": 5,
+          "author": "rogersop",
+          "votes": 0,
+          "created_at": "2020-08-03T14:14:00.000Z",
+          "comment_count": 2
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "returns an article object matching provided article ID",
+    "params": "article_id",
+    "exampleResponse": {
+      "article": {
+          "article_id": 1,
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "body": "I find this existence challenging",
+          "created_at": "2020-07-09T21:11:00.000Z",
+          "votes": 100,
+          "author": "butter_bridge",
+          "comment_count": "11"
+        }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "returns an array of comments matching provided article ID",
+    "params": "article_id",
+    "exampleResponse": {
+      "allComments": [
+        {
+          "comment_id": 10,
+          "votes": 0,
+          "created_at": "2020-06-20T07:24:00.000Z",
+          "author": "icellusedkars",
+          "body": "git push origin master"
+        },
+        {
+          "comment_id": 11,
+          "votes": 0,
+          "created_at": "2020-09-19T23:10:00.000Z",
+          "author": "icellusedkars",
+          "body": "Ambidextrous marsupial"
+        }
+      ]          
+    }
+  },
+  "GET /api/users": {
+    "description": "returns an array of users",
+    "exampleResponse": {
+      "allUsers": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        },
+        {
+          "username": "icellusedkars",
+          "name": "sam",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        },
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        },
+        {
+          "username": "lurker",
+          "name": "do_nothing",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      ]          
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates vote count and returns updated article",
+    "params": "article_id",
+    "patch format": {"inc_votes": 1},
+    "exampleResponse": {
+      "updatedArticle": {
+          "article_id": 1,
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "body": "I find this existence challenging",
+          "created_at": "2020-07-09T21:11:00.000Z",
+          "votes": 101,
+          "author": "butter_bridge"
+        }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "returns added comment",
+    "params": "article_id",
+    "patch format": {"username": "butter_bridge", "body": "some text"},
+    "exampleResponse": {
+      "addedComment": {
+        "comment_id": 19,
+        "body": "some text",
+        "article_id": 1,
+        "author": "butter_bridge",
+        "votes": 0,
+        "created_at": "2022-08-05T13:49:39.652Z"
+        }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes comment by comment id",
+    "params": "comment_id"
   }
 }

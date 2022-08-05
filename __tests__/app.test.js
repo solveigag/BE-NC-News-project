@@ -465,7 +465,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     });
     test("each object contains correct data type", () => {
       return request(app)
-        .get("/api/articles/1/comments")
+        .get("/api/articles/3/comments")
         .expect(200)
         .then(({ body }) => {
           const { allComments } = body;
