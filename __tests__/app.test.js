@@ -465,7 +465,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     });
     test("each object contains correct data type", () => {
       return request(app)
-        .get("/api/articles/1/comments")
+        .get("/api/articles/3/comments")
         .expect(200)
         .then(({ body }) => {
           const { allComments } = body;
@@ -591,4 +591,16 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(body.msg).toBe("Invalid input data type");
       });
   });
+});
+describe("GET /api", () => {
+  test("", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const {endPoints} = body
+        expect(endPoints).toBeInstanceOf(Object)
+        expect(Object.keys(endPoints).length).toBe(9)
+      });
+  });    
 });
