@@ -4,7 +4,7 @@ const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const sorted = require('jest-sorted');
-//const { convertTimestampToDate } = require("../db/seeds/utils");
+
 
 afterAll(() => {
   return db.end();
@@ -372,6 +372,7 @@ describe("GET /api/articles", () => {
           expect(allArticles).toHaveLength(1);
        })
     });
+    
     test("articles can be filtered by topic, sordted by creation dae in descending order by default ", () => {
       return request(app)
         .get("/api/articles?topic=mitch&sort_by=comment_count&order_by=asc")
@@ -384,9 +385,17 @@ describe("GET /api/articles", () => {
     });
   })
   describe("STATUS: 400s - queries", () => {
-    test("STATUS 404 - topic doesn't exist", () => {
+    test("STATUS 404 - topic doesn't exist - non existent topic", () => {
       return request(app)
         .get("/api/articles?topic=dogs")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("Topic not found!");
+        });
+    });
+    test("STATUS 404 - topic doesn't exist - no associated articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
         .expect(404)
         .then(({body}) => {
           expect(body.msg).toBe("Topic not found!");
